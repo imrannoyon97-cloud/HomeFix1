@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HomeFix.live</title><link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="topbar"><div class="brand">HOME<span>FIX</span><small>.LIVE</small></div>
+<a class="btn" href="login.html">Login</a></header>
+<main class="hero"><section><p class="eyebrow">HOME SERVICE MANAGEMENT</p>
+<h1>HomeFix <span>Service System</span></h1>
+<p>Book a service, manage technicians, assign jobs and create professional invoices from one system.</p>
+<div class="actions"><a class="btn primary" href="login.html">Open Dashboard</a><a class="btn ghost" href="#booking">Book a Service</a></div></section></main>
+<section id="booking" class="card booking-card"><h2>Quick Booking</h2>
+<form id="bookingForm" class="grid">
+<input id="customerName" placeholder="Customer name" required><input id="customerPhone" placeholder="Phone number" required>
+<input id="serviceName" placeholder="Service (e.g. AC Service)" required><input id="serviceDate" type="date" required>
+<textarea id="problem" placeholder="Describe the problem"></textarea><textarea id="address" placeholder="Service address" required></textarea>
+<button class="btn primary" type="submit">Submit Booking</button></form><p id="bookingMsg" class="msg"></p></section>
+<script type="module" src="js/public-booking.js"></script>
+</body></html>
