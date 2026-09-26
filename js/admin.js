@@ -1,1 +1,11 @@
-
+import {supabase} from './supabase.js';
+const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+async function guard(){const {data:{user}}=await supabase.auth.getUser();if(!user)return location.href='login.html';const {data:p}=await supabase.from('profiles').select('role').eq('auth_user_id',user.id).single();if(p?.role!=='admin')location.href='login.html'}
+async function load(){await guard();const [{data:bs},{data:ts}]=await Promise.all([supabase.from('bookings').select('*,customers(name,phone),booking_items(description)').order('created_at',{ascending:false}),supabase.from('technicians').select('*').eq('status','active').order('name')]);
+document.querySelector('#stats').innerHTML=`<div class="stat">New<b>${bs?.filter(x=>x.status==='NEW').length||0}</b></div><div class="stat">Assigned<b>${bs?.filter(x=>x.status==='ASSIGNED').length||0}</b></div><div class="stat">Working<b>${bs?.filter(x=>x.status==='WORKING').length||0}</b></div><div class="stat">Completed<b>${bs?.filter(x=>x.status==='COMPLETED').length||0}</b></div>`;
+document.querySelector('#bookings').innerHTML=(bs||[]).map(b=>`<tr><td>${esc(b.booking_number)}</td><td>${esc(b.customers?.name)}</td><td>${esc(b.booking_items?.[0]?.description||'Service')}</td><td>${esc(b.service_date)}</td><td><span class="tag">${esc(b.status)}</span></td><td><select data-booking="${b.id}"><option value="">Assign...</option>${(ts||[]).map(t=>`<option value="${t.id}">${esc(t.name)}</option>`).join('')}</select></td></tr>`).join('');
+document.querySelector('#technicians').innerHTML=(ts||[]).map(t=>`<div class="job"><b>${esc(t.name)}</b><p>${esc(t.specialization||'Technician')}</p><span class="tag">${esc(t.status)}</span></div>`).join('');
+document.querySelectorAll('[data-booking]').forEach(s=>s.addEventListener('change',()=>assign(s.dataset.booking,s.value)));
+}
+async function assign(booking_id,technician_id){if(!technician_id)return;const {data:{user}}=await supabase.auth.getUser();const {data:p}=await supabase.from('profiles').select('id').eq('auth_user_id',user.id).single();const {error}=await supabase.from('technician_assignments').insert({booking_id,technician_id,assigned_by:p.id});if(error)return alert(error.message);await supabase.from('bookings').update({status:'ASSIGNED'}).eq('id',booking_id);load()}
+document.querySelector('#refresh').onclick=load;document.querySelector('#logout').onclick=async()=>{await supabase.auth.signOut();location.href='login.html'};load();
