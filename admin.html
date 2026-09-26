@@ -47,10 +47,17 @@ const save=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
 function addTech(){
- const n=name.value.trim(),p=phone.value.trim(),pw=pin.value.trim()||'1234';
+ const n=document.getElementById('name').value.trim();
+ const p=document.getElementById('phone').value.trim();
+ const pw=document.getElementById('pin').value.trim()||'1234';
  if(!n||!p){alert('Name and phone required');return}
  const a=get(TK); a.push({id:'T'+Date.now().toString().slice(-6),name:n,phone:p,pin:pw,active:true});
- save(TK,a); name.value='';phone.value=''; render(); alert('Technician added');
+ save(TK,a);
+ document.getElementById('name').value='';
+ document.getElementById('phone').value='';
+ document.getElementById('pin').value='';
+ render();
+ alert('Technician added successfully');
 }
 function removeTech(id){save(TK,get(TK).filter(x=>x.id!==id));render()}
 function toggleTech(id){const a=get(TK),t=a.find(x=>x.id===id);if(t)t.active=!t.active;save(TK,a);render()}
