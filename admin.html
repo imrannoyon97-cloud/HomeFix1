@@ -1,7 +1,85 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Admin | HomeFix</title><link rel="stylesheet" href="css/style.css"></head>
-<body><header class="topbar"><div class="brand">HOME<span>FIX</span><small>.LIVE</small></div><button id="logout" class="btn">Logout</button></header>
-<main class="container"><div class="pagehead"><div><p class="eyebrow">ADMIN</p><h1>System Dashboard</h1></div></div>
-<div id="stats" class="stats"></div>
-<section class="card"><div class="sectionhead"><h2>Bookings</h2><button id="refresh" class="btn">Refresh</button></div><div class="tablewrap"><table><thead><tr><th>Booking</th><th>Customer</th><th>Service</th><th>Date</th><th>Status</th><th>Assign</th></tr></thead><tbody id="bookings"></tbody></table></div></section>
-<section class="card"><h2>Technicians</h2><div id="technicians" class="cards"></div></section>
-</main><script type="module" src="js/admin.js"></script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HomeFix Admin</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f5f7fb;color:#162033}
+.wrap{max-width:900px;margin:auto;padding:18px}.top,.card{background:#fff;border:1px solid #e1e6ee;border-radius:18px;padding:18px;margin-bottom:16px;box-shadow:0 3px 14px #0001}
+.top{display:flex;justify-content:space-between;align-items:center}.logo{font-size:25px;font-weight:800}.logo b{color:#2878df}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.stat{background:#f8fafc;border-radius:14px;padding:16px}.stat b{display:block;font-size:28px}
+input,select{width:100%;padding:12px;border:1px solid #ccd4df;border-radius:10px;font-size:15px}
+button{border:0;border-radius:11px;padding:12px 16px;font-weight:700;cursor:pointer}.primary{background:#2878df;color:#fff}.danger{background:#fff0f0;color:#b42318}
+.row{display:flex;gap:10px}.row>*{flex:1}.tech{border:1px solid #e1e6ee;border-radius:14px;padding:14px;margin-top:10px}
+.badge{display:inline-block;padding:5px 9px;border-radius:20px;background:#eaf2ff;color:#2878df;font-size:12px;font-weight:700}.muted{color:#667085;font-size:13px}
+@media(max-width:600px){.grid{grid-template-columns:1fr}.row{flex-direction:column}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="top"><div class="logo">HOME<b>FIX</b>.LIVE<div class="muted">Admin • Technician Management</div></div>
+<button onclick="location.href='index.html'">Main App</button></div>
+
+<div class="grid">
+<div class="stat"><b id="tc">0</b>Technicians</div>
+<div class="stat"><b id="bc">0</b>Bookings</div>
+<div class="stat"><b id="ac">0</b>Assigned</div>
+</div>
+
+<div class="card">
+<h2>Add Technician</h2>
+<div class="row">
+<input id="name" placeholder="Technician name">
+<input id="phone" placeholder="Phone">
+<input id="pin" placeholder="Login PIN" value="1234">
+</div>
+<button class="primary" style="margin-top:12px" onclick="addTech()">＋ Add Technician</button>
+</div>
+
+<div class="card"><h2>Technicians</h2><div id="techs"></div></div>
+<div class="card"><h2>Bookings / Assign</h2><div id="books"></div></div>
+</div>
+
+<script>
+const TK='homefixTechniciansV1',BK='homefixBookingsV2';
+const get=k=>JSON.parse(localStorage.getItem(k)||'[]');
+const save=(k,v)=>localStorage.setItem(k,JSON.stringify(v));
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+function addTech(){
+ const n=name.value.trim(),p=phone.value.trim(),pw=pin.value.trim()||'1234';
+ if(!n||!p){alert('Name and phone required');return}
+ const a=get(TK); a.push({id:'T'+Date.now().toString().slice(-6),name:n,phone:p,pin:pw,active:true});
+ save(TK,a); name.value='';phone.value=''; render(); alert('Technician added');
+}
+function removeTech(id){save(TK,get(TK).filter(x=>x.id!==id));render()}
+function toggleTech(id){const a=get(TK),t=a.find(x=>x.id===id);if(t)t.active=!t.active;save(TK,a);render()}
+function assign(bid,tid){
+ const b=get(BK),t=get(TK).find(x=>x.id===tid),j=b.find(x=>x.id===bid);
+ if(!j||!t)return;
+ j.technicianId=t.id;j.technician=t.name;j.status='Assigned';
+ save(BK,b);render();alert('Booking assigned to '+t.name);
+}
+function render(){
+ const t=get(TK),b=get(BK);
+ tc.textContent=t.length;bc.textContent=b.length;ac.textContent=b.filter(x=>x.technicianId).length;
+ techs.innerHTML=t.length?t.map(x=>`<div class="tech"><b>${esc(x.name)}</b>
+ <div class="muted">${esc(x.phone)} • Login PIN: ${esc(x.pin)}</div>
+ <span class="badge">${x.active?'Active':'Inactive'}</span>
+ <div style="margin-top:10px"><button class="primary" onclick="toggleTech('${x.id}')">${x.active?'Deactivate':'Activate'}</button>
+ <button class="danger" onclick="removeTech('${x.id}')">Remove</button></div></div>`).join(''):'<p class="muted">No technicians yet.</p>';
+
+ books.innerHTML=b.length?b.map(j=>{
+   const opts=t.filter(x=>x.active).map(x=>`<option value="${x.id}" ${j.technicianId===x.id?'selected':''}>${esc(x.name)}</option>`).join('');
+   return `<div class="tech"><b>${esc(j.id||'Booking')}</b> <span class="badge">${esc(j.status||'New')}</span>
+   <div>${esc(j.customer?.name||'Customer')} • ${esc(j.service?.name||'Service')}</div>
+   <div class="row" style="margin-top:10px">
+   <select id="sel_${esc(j.id)}"><option value="">Select technician</option>${opts}</select>
+   <button class="primary" onclick="assign('${esc(j.id)}',document.getElementById('sel_${esc(j.id)}').value)">Assign</button>
+   </div></div>`;
+ }).join(''):'<p class="muted">No bookings found. Create one from Main App.</p>';
+}
+render();
+</script>
+</body>
+</html>
