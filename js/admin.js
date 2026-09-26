@@ -1,4 +1,4 @@
-import {supabase} from './supabase.js';
+import {supabase} from '../supabase.js';
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 async function guard(){const {data:{user}}=await supabase.auth.getUser();if(!user)return location.href='login.html';const {data:p}=await supabase.from('profiles').select('role').eq('auth_user_id',user.id).single();if(p?.role!=='admin')location.href='login.html'}
 async function load(){await guard();const [{data:bs},{data:ts}]=await Promise.all([supabase.from('bookings').select('*,customers(name,phone),booking_items(description)').order('created_at',{ascending:false}),supabase.from('technicians').select('*').eq('status','active').order('name')]);
