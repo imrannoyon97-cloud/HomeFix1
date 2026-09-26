@@ -65,7 +65,7 @@ function makeInvoice(id){
  const service=j.service||{};
  const date=new Date(j.completedAt||Date.now()).toLocaleDateString('en-GB');
  w.document.write(`<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><title>HomeFix Invoice ${esc(j.id)}</title><style>body{font-family:Arial,sans-serif;background:#f4f6fa;margin:0;padding:20px;color:#172033}.invoice{max-width:720px;margin:auto;background:#fff;padding:28px;border-radius:18px;box-shadow:0 3px 18px #0001}.head{display:flex;justify-content:space-between;gap:15px;border-bottom:2px solid #e8edf4;padding-bottom:18px}.logo{font-size:28px;font-weight:800}.blue{color:#2878df}.muted{color:#667085}.row{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid #edf0f4}.total{font-size:22px;font-weight:800}.print{margin-top:20px;background:#2878df;color:white;border:0;border-radius:10px;padding:13px 18px;font-weight:700}@media print{body{background:white;padding:0}.invoice{box-shadow:none}.print{display:none}}</style></head><body><div class="invoice"><div class="head"><div><div class="logo">HOME<span class="blue">FIX</span>.LIVE</div><div class="muted">Electrical Service Invoice</div></div><div style="text-align:right"><b>Invoice</b><br>${esc(j.id)}<br>${date}</div></div><h3>Customer</h3><div>${esc(customer.name||'Customer')}</div><div class="muted">${esc(customer.phone||'')}</div><div class="muted">${esc(customer.address||'')}</div><h3>Service</h3><div class="row"><span>${esc(service.name||'Electrical Service')}</span><b>৳ ${amount.toFixed(2)}</b></div><div class="row total"><span>Total</span><span>৳ ${amount.toFixed(2)}</span></div><p class="muted">Technician: ${esc(me?.name||'')}</p><button class="print" onclick="window.print()">Print / Save as PDF</button></div></body></html>`);
- w.document.close();
+ w.document.close();setTimeout(()=>{try{w.focus();w.print();}catch(e){}},700);
 }
 function setAmount(id,val){
  const a=get(BK),j=a.find(x=>x.id===id); if(!j)return;
@@ -85,7 +85,7 @@ function render(){
  <option ${j.status==='Working'?'selected':''}>Working</option>
  <option ${j.status==='Completed'?'selected':''}>Completed</option>
  </select>
- ${j.status==='Completed'?`<label>Final Bill Amount (৳)</label><input class="amount" type="number" min="0" value="${Number(j.finalAmount ?? j.price ?? j.service?.price ?? 0)}" onchange="setAmount('${esc(j.id)}',this.value)"><button class="invoice" onclick="makeInvoice('${esc(j.id)}')">🧾 Create Invoice / PDF</button>`:''}
+ ${j.status==='Completed'?`<label>Final Bill Amount (৳)</label><input class="amount" type="number" min="0" value="${Number(j.finalAmount ?? j.price ?? j.service?.price ?? 0)}" onchange="setAmount('${esc(j.id)}',this.value)"><div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px"><button class="invoice" onclick="makeInvoice('${esc(j.id)}')">⬇️ Download Invoice PDF</button><button style="background:#eef4ff;color:#2878df" onclick="makeInvoice('${esc(j.id)}')">🧾 View Invoice</button></div><div class="muted" style="margin-top:7px">Completed হলে এই option নিজে থেকেই দেখা যাবে। চাপলে Print/Save as PDF থেকে PDF save করুন।</div>`:''}
  </div>`).join(''):'<div class="card"><p class="muted">No assigned bookings.</p></div>';
 }
 show();
