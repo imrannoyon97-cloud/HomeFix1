@@ -7,7 +7,7 @@
 *{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f5f7fb;color:#162033}
 .wrap{max-width:700px;margin:auto;padding:18px}.card,.top{background:#fff;border:1px solid #e1e6ee;border-radius:18px;padding:18px;margin-bottom:14px;box-shadow:0 3px 14px #0001}
 input,select{width:100%;padding:12px;border:1px solid #ccd4df;border-radius:10px;margin:6px 0 10px;font-size:15px}
-button{border:0;border-radius:11px;padding:12px 16px;font-weight:700}.primary{background:#2878df;color:#fff}
+button{border:0;border-radius:11px;padding:12px 16px;font-weight:700;cursor:pointer}.primary{background:#2878df;color:#fff}.invoice{background:#16a36a;color:#fff;margin-top:8px}.amount{font-size:18px;font-weight:700}
 .badge{display:inline-block;padding:5px 9px;border-radius:20px;background:#eaf2ff;color:#2878df;font-size:12px;font-weight:700}
 .muted{color:#667085;font-size:13px}.job{border:1px solid #e1e6ee;border-radius:14px;padding:14px;margin-top:10px}.hidden{display:none!important}
 </style>
@@ -49,7 +49,27 @@ function show(){
 function logout(){sessionStorage.removeItem('hfTechId');me=null;show()}
 function updateStatus(id,status){
  const a=get(BK),j=a.find(x=>x.id===id);
- if(j){j.status=status;save(BK,a);render()}
+ if(j){
+   j.status=status;
+   if(status==='Completed' && !j.completedAt) j.completedAt=new Date().toISOString();
+   save(BK,a);render();
+ }
+}
+function makeInvoice(id){
+ const j=get(BK).find(x=>x.id===id);
+ if(!j){alert('Booking not found');return}
+ const amount=Number(j.finalAmount ?? j.price ?? j.service?.price ?? 0);
+ const w=window.open('','_blank');
+ if(!w){alert('Please allow pop-ups for invoice');return}
+ const customer=j.customer||{};
+ const service=j.service||{};
+ const date=new Date(j.completedAt||Date.now()).toLocaleDateString('en-GB');
+ w.document.write(`<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><title>HomeFix Invoice ${esc(j.id)}</title><style>body{font-family:Arial,sans-serif;background:#f4f6fa;margin:0;padding:20px;color:#172033}.invoice{max-width:720px;margin:auto;background:#fff;padding:28px;border-radius:18px;box-shadow:0 3px 18px #0001}.head{display:flex;justify-content:space-between;gap:15px;border-bottom:2px solid #e8edf4;padding-bottom:18px}.logo{font-size:28px;font-weight:800}.blue{color:#2878df}.muted{color:#667085}.row{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid #edf0f4}.total{font-size:22px;font-weight:800}.print{margin-top:20px;background:#2878df;color:white;border:0;border-radius:10px;padding:13px 18px;font-weight:700}@media print{body{background:white;padding:0}.invoice{box-shadow:none}.print{display:none}}</style></head><body><div class="invoice"><div class="head"><div><div class="logo">HOME<span class="blue">FIX</span>.LIVE</div><div class="muted">Electrical Service Invoice</div></div><div style="text-align:right"><b>Invoice</b><br>${esc(j.id)}<br>${date}</div></div><h3>Customer</h3><div>${esc(customer.name||'Customer')}</div><div class="muted">${esc(customer.phone||'')}</div><div class="muted">${esc(customer.address||'')}</div><h3>Service</h3><div class="row"><span>${esc(service.name||'Electrical Service')}</span><b>৳ ${amount.toFixed(2)}</b></div><div class="row total"><span>Total</span><span>৳ ${amount.toFixed(2)}</span></div><p class="muted">Technician: ${esc(me?.name||'')}</p><button class="print" onclick="window.print()">Print / Save as PDF</button></div></body></html>`);
+ w.document.close();
+}
+function setAmount(id,val){
+ const a=get(BK),j=a.find(x=>x.id===id); if(!j)return;
+ j.finalAmount=Number(val||0); save(BK,a);
 }
 function render(){
  const a=get(BK).filter(x=>x.technicianId===me.id);
@@ -65,6 +85,7 @@ function render(){
  <option ${j.status==='Working'?'selected':''}>Working</option>
  <option ${j.status==='Completed'?'selected':''}>Completed</option>
  </select>
+ ${j.status==='Completed'?`<label>Final Bill Amount (৳)</label><input class="amount" type="number" min="0" value="${Number(j.finalAmount ?? j.price ?? j.service?.price ?? 0)}" onchange="setAmount('${esc(j.id)}',this.value)"><button class="invoice" onclick="makeInvoice('${esc(j.id)}')">🧾 Create Invoice / PDF</button>`:''}
  </div>`).join(''):'<div class="card"><p class="muted">No assigned bookings.</p></div>';
 }
 show();
