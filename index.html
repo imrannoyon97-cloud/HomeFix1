@@ -1,22 +1,889 @@
+
 <!doctype html>
+
 <html lang="en">
+
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>HomeFix.live</title><link rel="stylesheet" href="css/style.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>HomeFix.live</title>
+
+<link rel="stylesheet" href="css/style.css">
+
+<style>
+.booking-card {
+    max-width: 1000px;
+    margin: 40px auto;
+}
+
+.booking-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.field label {
+    font-weight: 600;
+}
+
+.field input,
+.field select,
+.field textarea {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 15px;
+}
+
+.field textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.full {
+    grid-column: 1 / -1;
+}
+
+.manual-note {
+    font-size: 12px;
+    color: #666;
+    margin-top: 3px;
+}
+
+.price-input {
+    font-weight: 600;
+}
+
+@media (max-width: 700px) {
+    .booking-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .full {
+        grid-column: auto;
+    }
+}
+</style>
+
 </head>
+
 <body>
-<header class="topbar"><div class="brand">HOME<span>FIX</span><small>.LIVE</small></div>
-<a class="btn" href="login.html">Login</a></header>
-<main class="hero"><section><p class="eyebrow">HOME SERVICE MANAGEMENT</p>
-<h1>HomeFix <span>Service System</span></h1>
-<p>Book a service, manage technicians, assign jobs and create professional invoices from one system.</p>
-<div class="actions"><a class="btn primary" href="login.html">Open Dashboard</a><a class="btn ghost" href="#booking">Book a Service</a></div></section></main>
-<section id="booking" class="card booking-card"><h2>Quick Booking</h2>
-<form id="bookingForm" class="grid">
-<input id="customerName" placeholder="Customer name" required><input id="customerPhone" placeholder="Phone number" required>
-<input id="serviceName" placeholder="Service (e.g. AC Service)" required><input id="serviceDate" type="date" required>
-<textarea id="problem" placeholder="Describe the problem"></textarea><textarea id="address" placeholder="Service address" required></textarea>
-<button class="btn primary" type="submit">Submit Booking</button></form><p id="bookingMsg" class="msg"></p></section>
+
+<header class="topbar">
+
+```
+<div class="brand">
+    HOME<span>FIX</span><small>.LIVE</small>
+</div>
+
+<a class="btn" href="login.html">
+    Login
+</a>
+```
+
+</header>
+
+<main class="hero">
+
+<section>
+
+```
+<p class="eyebrow">
+    HOME SERVICE MANAGEMENT
+</p>
+
+<h1>
+    HomeFix <span>Service System</span>
+</h1>
+
+<p>
+    Book a service, manage technicians, assign jobs and create
+    professional invoices from one system.
+</p>
+
+<div class="actions">
+
+    <a class="btn primary" href="login.html">
+        Open Dashboard
+    </a>
+
+    <a class="btn ghost" href="#booking">
+        Book a Service
+    </a>
+
+</div>
+```
+
+</section>
+
+</main>
+
+<section id="booking" class="card booking-card">
+
+<h2>Quick Booking</h2>
+
+<p>
+    Select a recommended service or enter your own service manually.
+</p>
+
+<form id="bookingForm" class="booking-grid">
+
+<!-- CUSTOMER NAME -->
+
+<div class="field">
+
+<label for="customerName">
+    Customer Name *
+</label>
+
+<input
+id="customerName"
+name="customer_name"
+type="text"
+placeholder="Enter customer name"
+required
+
+>
+
+</div>
+
+<!-- PHONE -->
+
+<div class="field">
+
+<label for="customerPhone">
+    Phone Number *
+</label>
+
+<input
+id="customerPhone"
+name="phone"
+type="tel"
+placeholder="01XXXXXXXXX"
+required
+
+>
+
+</div>
+
+<!-- CATEGORY -->
+
+<div class="field">
+
+<label for="category">
+    Category *
+</label>
+
+<input
+id="category"
+name="category"
+list="categoryList"
+placeholder="Select or type category"
+autocomplete="off"
+required
+
+>
+
+<datalist id="categoryList">
+
+<option value="House Wiring">
+<option value="DB & Protection">
+<option value="Electrical Points">
+<option value="Fault Repair">
+<option value="Inspection & Testing">
+<option value="Appliance & Basic Installation">
+<option value="Emergency & Special">
+
+</datalist>
+
+<p class="manual-note">
+    You can select a recommendation or type your own.
+</p>
+
+</div>
+
+<!-- SUB CATEGORY -->
+
+<div class="field">
+
+<label for="subCategory">
+    Sub Category *
+</label>
+
+<input
+id="subCategory"
+name="sub_category"
+list="subCategoryList"
+placeholder="Select or type sub category"
+autocomplete="off"
+required
+
+>
+
+<datalist id="subCategoryList"></datalist>
+
+<p class="manual-note">
+    Recommendations will depend on the selected category.
+</p>
+
+</div>
+
+<!-- SERVICE -->
+
+<div class="field full">
+
+<label for="service">
+    Service *
+</label>
+
+<input
+id="service"
+name="service"
+list="serviceList"
+placeholder="Select or type service"
+autocomplete="off"
+required
+
+>
+
+<datalist id="serviceList"></datalist>
+
+<p class="manual-note">
+    Recommended services will depend on the selected sub category.
+</p>
+
+</div>
+
+<!-- PRICE -->
+
+<div class="field">
+
+<label for="price">
+    Service Price (৳) *
+</label>
+
+<input
+id="price"
+name="price"
+class="price-input"
+type="number"
+min="0"
+step="1"
+placeholder="Enter price"
+required
+
+>
+
+<p class="manual-note">
+    Price must be entered manually.
+</p>
+
+</div>
+
+<!-- SERVICE DATE -->
+
+<div class="field">
+
+<label for="serviceDate">
+    Preferred Service Date *
+</label>
+
+<input
+id="serviceDate"
+name="service_date"
+type="date"
+required
+
+>
+
+</div>
+
+<!-- ADDRESS -->
+
+<div class="field full">
+
+<label for="address">
+    Service Address *
+</label>
+
+<textarea
+    id="address"
+    name="address"
+    placeholder="Enter complete service address"
+    required
+></textarea>
+
+</div>
+
+<!-- PROBLEM -->
+
+<div class="field full">
+
+<label for="problem">
+    Problem / Additional Information
+</label>
+
+<textarea
+    id="problem"
+    name="problem"
+    placeholder="Describe the problem or additional requirements"
+></textarea>
+
+</div>
+
+<!-- SUBMIT -->
+
+<div class="field full">
+
+<button
+class="btn primary"
+type="submit"
+
+>
+
+```
+Submit Booking
+```
+
+</button>
+
+</div>
+
+</form>
+
+<p
+    id="bookingMsg"
+    class="msg"
+></p>
+
+</section>
+
+<!-- SUPABASE -->
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- BOOKING LOGIC -->
+
 <script type="module" src="./js/public-booking.js"></script>
-</body></html>
+
+<!-- CATEGORY → SUB CATEGORY → SERVICE -->
+
+<script>
+
+const serviceDatabase = {
+
+    "House Wiring": {
+
+        "General Wiring": [
+            "New House Wiring",
+            "Partial House Wiring",
+            "Complete House Wiring"
+        ],
+
+        "Wiring Type": [
+            "Concealed Wiring",
+            "Surface Wiring",
+            "PVC Wiring"
+        ],
+
+        "Lighting Wiring": [
+            "Light Point Wiring",
+            "LED Light Wiring",
+            "Ceiling Light Wiring"
+        ],
+
+        "Fan Wiring": [
+            "Ceiling Fan Wiring",
+            "Exhaust Fan Wiring"
+        ],
+
+        "Socket Wiring": [
+            "Single Socket Wiring",
+            "Multiple Socket Wiring",
+            "Heavy Load Socket Wiring"
+        ],
+
+        "Switch Wiring": [
+            "Switch Installation",
+            "Switch Replacement"
+        ],
+
+        "Bell Wiring": [
+            "Door Bell Installation",
+            "Door Bell Repair"
+        ],
+
+        "TV & Data Wiring": [
+            "TV Point Wiring",
+            "LAN Point Wiring"
+        ],
+
+        "Security Wiring": [
+            "CCTV Wiring",
+            "Security System Wiring"
+        ],
+
+        "Dedicated Power Point": [
+            "AC Power Point",
+            "Geyser Power Point",
+            "Washing Machine Power Point"
+        ],
+
+        "Outdoor Wiring": [
+            "Outdoor Light Wiring",
+            "Garden Wiring"
+        ],
+
+        "Backup & Generator": [
+            "Generator Connection",
+            "IPS Connection",
+            "Backup Wiring"
+        ],
+
+        "Main Supply": [
+            "Main Cable Installation",
+            "Main Supply Repair"
+        ],
+
+        "Re-Wiring": [
+            "House Re-Wiring",
+            "Old Wiring Replacement"
+        ]
+
+    },
+
+
+    "DB & Protection": {
+
+        "DB Installation": [
+            "Distribution Board Installation",
+            "DB Replacement"
+        ],
+
+        "MCB": [
+            "MCB Installation",
+            "MCB Replacement",
+            "MCB Tripping Repair"
+        ],
+
+        "RCCB/RCBO": [
+            "RCCB Installation",
+            "RCBO Installation",
+            "RCCB Trip Problem"
+        ],
+
+        "Main Protection": [
+            "Main MCB Installation",
+            "Main Protection Repair"
+        ],
+
+        "Circuit Management": [
+            "Circuit Separation",
+            "Circuit Re-arrangement"
+        ],
+
+        "Earthing": [
+            "Earthing Installation",
+            "Earthing Repair",
+            "Earthing Improvement"
+        ],
+
+        "Protection Accessories": [
+            "SPD Installation",
+            "Fuse Installation"
+        ],
+
+        "DB Maintenance": [
+            "DB Inspection",
+            "DB Cleaning",
+            "DB Maintenance"
+        ],
+
+        "DB Components": [
+            "Busbar Installation",
+            "Neutral Bar Installation",
+            "DB Component Replacement"
+        ]
+
+    },
+
+
+    "Electrical Points": {
+
+        "Switch & Socket": [
+            "Switch Installation",
+            "Socket Installation",
+            "Switch Replacement",
+            "Socket Replacement"
+        ],
+
+        "Conduit & Box": [
+            "Conduit Installation",
+            "Electrical Box Installation"
+        ],
+
+        "Fan": [
+            "Ceiling Fan Installation",
+            "Ceiling Fan Replacement"
+        ],
+
+        "Lighting": [
+            "LED Light Installation",
+            "Tube Light Installation",
+            "Ceiling Light Installation"
+        ],
+
+        "Ventilation": [
+            "Exhaust Fan Installation",
+            "Ventilation Fan Installation"
+        ],
+
+        "Bell & Sensor": [
+            "Door Bell Installation",
+            "Motion Sensor Installation"
+        ],
+
+        "Outdoor": [
+            "Outdoor Socket",
+            "Outdoor Light Point"
+        ],
+
+        "Emergency": [
+            "Emergency Electrical Point"
+        ]
+
+    },
+
+
+    "Fault Repair": {
+
+        "Short Circuit": [
+            "Short Circuit Repair",
+            "Short Circuit Inspection"
+        ],
+
+        "Connection Fault": [
+            "Loose Connection Repair",
+            "Burnt Connection Repair"
+        ],
+
+        "Testing": [
+            "Electrical Fault Testing",
+            "Circuit Testing"
+        ],
+
+        "Wiring Fault": [
+            "Wiring Fault Repair",
+            "Damaged Wire Replacement"
+        ],
+
+        "Switch & Socket": [
+            "Switch Fault Repair",
+            "Socket Fault Repair"
+        ],
+
+        "Accessories": [
+            "Electrical Accessories Repair"
+        ],
+
+        "Fan Fault": [
+            "Ceiling Fan Fault Repair",
+            "Exhaust Fan Fault Repair"
+        ],
+
+        "Lighting Fault": [
+            "Light Fault Repair",
+            "LED Light Repair"
+        ],
+
+        "Protection Fault": [
+            "MCB Fault Repair",
+            "RCCB Fault Repair"
+        ],
+
+        "Leakage Fault": [
+            "Current Leakage Testing",
+            "Leakage Fault Repair"
+        ],
+
+        "Neutral Fault": [
+            "Neutral Fault Repair"
+        ],
+
+        "Earthing Fault": [
+            "Earthing Fault Repair"
+        ],
+
+        "Socket Fault": [
+            "Socket Fault Diagnosis",
+            "Socket Replacement"
+        ],
+
+        "Overheating": [
+            "Cable Overheating Inspection",
+            "Connection Overheating Repair"
+        ],
+
+        "Intermittent Fault": [
+            "Intermittent Electrical Fault Diagnosis"
+        ],
+
+        "Emergency Repair": [
+            "Emergency Electrical Repair"
+        ]
+
+    },
+
+
+    "Inspection & Testing": {
+
+        "Load & Circuit": [
+            "Load Measurement",
+            "Circuit Load Inspection"
+        ],
+
+        "Safety Inspection": [
+            "Electrical Safety Inspection",
+            "Home Electrical Safety Check"
+        ],
+
+        "Wiring Testing": [
+            "Wiring Inspection",
+            "Wiring Testing"
+        ],
+
+        "DB Testing": [
+            "DB Testing",
+            "DB Safety Inspection"
+        ],
+
+        "Earthing Testing": [
+            "Earth Resistance Testing",
+            "Earthing Inspection"
+        ],
+
+        "Insulation Testing": [
+            "Insulation Resistance Test"
+        ],
+
+        "Polarity & Continuity": [
+            "Polarity Test",
+            "Continuity Test"
+        ],
+
+        "Socket Testing": [
+            "Socket Safety Test"
+        ],
+
+        "Circuit Identification": [
+            "Circuit Identification"
+        ],
+
+        "Commissioning": [
+            "Electrical Commissioning"
+        ]
+
+    },
+
+
+    "Appliance & Basic Installation": {
+
+        "Fan & Light": [
+            "Ceiling Fan Installation",
+            "Light Installation"
+        ],
+
+        "Heater": [
+            "Water Heater Installation",
+            "Heater Electrical Connection"
+        ],
+
+        "Water Pump": [
+            "Water Pump Installation",
+            "Water Pump Electrical Connection"
+        ],
+
+        "Motor": [
+            "Motor Installation",
+            "Motor Electrical Connection"
+        ],
+
+        "Ventilation": [
+            "Exhaust Fan Installation",
+            "Ventilation Fan Installation"
+        ],
+
+        "Washing Machine": [
+            "Washing Machine Electrical Connection"
+        ],
+
+        "Refrigerator": [
+            "Refrigerator Electrical Point"
+        ],
+
+        "AC": [
+            "AC Electrical Connection",
+            "AC Dedicated Power Point"
+        ],
+
+        "IPS/Inverter": [
+            "IPS Installation",
+            "Inverter Installation",
+            "IPS Wiring"
+        ]
+
+    },
+
+
+    "Emergency & Special": {
+
+        "Emergency Visit": [
+            "Emergency Electrical Visit"
+        ],
+
+        "Urgent Service": [
+            "Urgent Electrical Service"
+        ],
+
+        "Renovation": [
+            "Electrical Renovation"
+        ],
+
+        "Temporary Supply": [
+            "Temporary Electrical Supply"
+        ],
+
+        "Safety Correction": [
+            "Electrical Safety Correction"
+        ]
+
+    }
+
+};
+
+
+const categoryInput =
+    document.getElementById("category");
+
+const subCategoryInput =
+    document.getElementById("subCategory");
+
+const serviceInput =
+    document.getElementById("service");
+
+const subCategoryList =
+    document.getElementById("subCategoryList");
+
+const serviceList =
+    document.getElementById("serviceList");
+
+
+function clearList(list) {
+
+    list.innerHTML = "";
+
+}
+
+
+function addOptions(list, values) {
+
+    clearList(list);
+
+    values.forEach(value => {
+
+        const option =
+            document.createElement("option");
+
+        option.value = value;
+
+        list.appendChild(option);
+
+    });
+
+}
+
+
+function getCategoryData() {
+
+    return serviceDatabase[
+        categoryInput.value.trim()
+    ];
+
+}
+
+
+/* CATEGORY CHANGE */
+
+categoryInput.addEventListener("input", () => {
+
+    const categoryData =
+        getCategoryData();
+
+    clearList(subCategoryList);
+    clearList(serviceList);
+
+    if (!categoryData) {
+        return;
+    }
+
+    addOptions(
+        subCategoryList,
+        Object.keys(categoryData)
+    );
+
+});
+
+
+/* SUB CATEGORY CHANGE */
+
+subCategoryInput.addEventListener("input", () => {
+
+    const categoryData =
+        getCategoryData();
+
+    clearList(serviceList);
+
+    if (!categoryData) {
+        return;
+    }
+
+    const services =
+        categoryData[
+            subCategoryInput.value.trim()
+        ];
+
+    if (!services) {
+        return;
+    }
+
+    addOptions(
+        serviceList,
+        services
+    );
+
+});
+
+
+/* TODAY AS MINIMUM DATE */
+
+const serviceDate =
+    document.getElementById("serviceDate");
+
+const today =
+    new Date().toISOString().split("T")[0];
+
+serviceDate.min = today;
+
+</script>
+
+</body>
+</html>
