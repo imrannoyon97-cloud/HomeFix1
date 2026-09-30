@@ -282,8 +282,7 @@ if (!bookingForm) {
                                 "Authorization":
     "Bearer " + SUPABASE_ANON_KEY,
 
-                                "Prefer":
-                                    "return=representation"
+                                "Prefer": "return=minimal"
 
                             },
 
