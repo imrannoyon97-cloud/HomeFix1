@@ -249,7 +249,7 @@ if (!bookingForm) {
 
                     problem: problem,
 
-                    status: "Pending"
+                   status: "NEW"
 
                 };
 
