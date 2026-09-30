@@ -280,7 +280,7 @@ if (!bookingForm) {
                                     SUPABASE_ANON_KEY,
 
                                 "Authorization":
-                                    `Bearer ${SUPABASE_ANON_KEY}`,
+    "Bearer " + SUPABASE_ANON_KEY,
 
                                 "Prefer":
                                     "return=representation"
