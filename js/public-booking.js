@@ -1,16 +1,25 @@
 const SUPABASE_URL = "https://jjqxnsidbnibfnneaqwo.supabase.co";
 
 const SUPABASE_ANON_KEY =
-"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpqcXhuc2lkYm5pYmZubmVhcXdvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0MDU5OTYsImV4cCI6MjEwNTk4MTk5Nn0.T9-BN9vKrDGy2efxc7xG0Kgp00UKUCfxhNjb7zZ3n8U";
+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJqcXhuc2lkYm5pYmZubmVhcXdvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA0MDU5OTYsImV4cCI6MjEwNTk4MTk5Nn0.T9-BN9vKrDGy2efxc7xG0Kgp00UKUCfxhNjb7zZ3n8U";
 
 const supabaseClient = window.supabase.createClient(
     SUPABASE_URL,
     SUPABASE_ANON_KEY
 );
 
+
+// ========================================
+// GET BOOKING FORM
+// ========================================
+
 const bookingForm = document.getElementById("bookingForm");
 const bookingMsg = document.getElementById("bookingMsg");
 
+
+// ========================================
+// GENERATE BOOKING ID
+// ========================================
 
 function generateBookingId() {
 
@@ -28,6 +37,10 @@ function generateBookingId() {
 }
 
 
+// ========================================
+// SHOW MESSAGE
+// ========================================
+
 function showMessage(message, type = "success") {
 
     if (!bookingMsg) {
@@ -36,11 +49,17 @@ function showMessage(message, type = "success") {
     }
 
     bookingMsg.textContent = message;
+
     bookingMsg.style.display = "block";
+
     bookingMsg.style.color =
         type === "success" ? "green" : "red";
 }
 
+
+// ========================================
+// BOOKING FORM
+// ========================================
 
 if (!bookingForm) {
 
@@ -48,221 +67,369 @@ if (!bookingForm) {
 
 } else {
 
-    bookingForm.addEventListener("submit", async function (event) {
+    bookingForm.addEventListener(
+        "submit",
+        async function (event) {
 
-        event.preventDefault();
-
-        const customerName =
-            document.getElementById("customerName")?.value.trim() || "";
-
-        const customerPhone =
-            document.getElementById("customerPhone")?.value.trim() || "";
-
-        const category =
-            document.getElementById("category")?.value.trim() || "";
-
-        const subCategory =
-            document.getElementById("subCategory")?.value.trim() || "";
-
-        const service =
-            document.getElementById("service")?.value.trim() || "";
-
-        const price =
-            document.getElementById("price")?.value || "";
-
-        const serviceDate =
-            document.getElementById("serviceDate")?.value || "";
-
-        const address =
-            document.getElementById("address")?.value.trim() || "";
-
-        const problem =
-            document.getElementById("problem")?.value.trim() || "";
+            event.preventDefault();
 
 
-        if (!customerName) {
-            showMessage("Please enter customer name.", "error");
-            return;
-        }
+            // ========================================
+            // GET FORM VALUES
+            // ========================================
 
-        if (!customerPhone) {
-            showMessage("Please enter phone number.", "error");
-            return;
-        }
-
-        if (!category) {
-            showMessage("Please select or enter a category.", "error");
-            return;
-        }
-
-        if (!subCategory) {
-            showMessage("Please select or enter a sub category.", "error");
-            return;
-        }
-
-        if (!service) {
-            showMessage("Please select or enter a service.", "error");
-            return;
-        }
-
-        if (!price || Number(price) < 0) {
-            showMessage("Please enter a valid service price.", "error");
-            return;
-        }
-
-        if (!serviceDate) {
-            showMessage("Please select service date.", "error");
-            return;
-        }
-
-        if (!address) {
-            showMessage("Please enter service address.", "error");
-            return;
-        }
+            const customerName =
+                document.getElementById("customerName")
+                    ?.value.trim() || "";
 
 
-        const submitButton =
-            bookingForm.querySelector('button[type="submit"]');
-
-        if (submitButton) {
-            submitButton.disabled = true;
-            submitButton.textContent = "Submitting...";
-        }
+            const customerPhone =
+                document.getElementById("customerPhone")
+                    ?.value.trim() || "";
 
 
-        try {
-
-            const bookingId = generateBookingId();
-
-
-            /*
-             * IMPORTANT:
-             * booking_number is required by the bookings table.
-             */
-
-            const bookingData = {
-
-                booking_id: bookingId,
-
-                booking_number: bookingId,
-
-                customer_name: customerName,
-
-                phone: customerPhone,
-
-                category: category,
-
-                sub_category: subCategory,
-
-                service: service,
-
-                price: Number(price),
-
-                service_date: serviceDate,
-
-                address: address,
-
-                problem: problem,
-
-                status: "NEW"
-
-            };
+            const category =
+                document.getElementById("category")
+                    ?.value.trim() || "";
 
 
-            console.log("Sending booking:", bookingData);
+            const subCategory =
+                document.getElementById("subCategory")
+                    ?.value.trim() || "";
 
 
-            /*
-             * Use Supabase JS client directly.
-             * No manual fetch / Authorization header.
-             */
-
-            const { data, error } =
-                await supabaseClient
-                    .from("bookings")
-                    .insert([bookingData])
-                    .select("booking_id, booking_number");
+            const service =
+                document.getElementById("service")
+                    ?.value.trim() || "";
 
 
-            console.log("Supabase insert result:", {
-                data,
-                error
-            });
+            const price =
+                document.getElementById("price")
+                    ?.value || "";
 
 
-            if (error) {
+            const serviceDate =
+                document.getElementById("serviceDate")
+                    ?.value || "";
 
-                console.error("Supabase booking error:", error);
 
-                throw new Error(
-                    error.message ||
-                    "Booking could not be submitted."
+            const address =
+                document.getElementById("address")
+                    ?.value.trim() || "";
+
+
+            const problem =
+                document.getElementById("problem")
+                    ?.value.trim() || "";
+
+
+            // ========================================
+            // VALIDATION
+            // ========================================
+
+            if (!customerName) {
+
+                showMessage(
+                    "Please enter customer name.",
+                    "error"
                 );
+
+                return;
             }
 
 
-            showMessage(
-                "Booking submitted successfully! Booking ID: " + bookingId,
-                "success"
-            );
+            if (!customerPhone) {
 
+                showMessage(
+                    "Please enter phone number.",
+                    "error"
+                );
 
-            bookingForm.reset();
-
-
-            const serviceDateInput =
-                document.getElementById("serviceDate");
-
-            if (serviceDateInput) {
-
-                const today =
-                    new Date()
-                        .toISOString()
-                        .split("T")[0];
-
-                serviceDateInput.min = today;
+                return;
             }
 
 
-            const subCategoryList =
-                document.getElementById("subCategoryList");
+            if (!category) {
 
-            const serviceList =
-                document.getElementById("serviceList");
+                showMessage(
+                    "Please select or enter a category.",
+                    "error"
+                );
 
-            if (subCategoryList) {
-                subCategoryList.innerHTML = "";
-            }
-
-            if (serviceList) {
-                serviceList.innerHTML = "";
+                return;
             }
 
 
-        } catch (error) {
+            if (!subCategory) {
 
-            console.error(
-                "Booking submission error:",
-                error
-            );
+                showMessage(
+                    "Please select or enter a sub category.",
+                    "error"
+                );
 
-            showMessage(
-                error.message ||
-                "Something went wrong. Please try again.",
-                "error"
-            );
+                return;
+            }
 
-        } finally {
+
+            if (!service) {
+
+                showMessage(
+                    "Please select or enter a service.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            if (!price || Number(price) < 0) {
+
+                showMessage(
+                    "Please enter a valid service price.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            if (!serviceDate) {
+
+                showMessage(
+                    "Please select service date.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            if (!address) {
+
+                showMessage(
+                    "Please enter service address.",
+                    "error"
+                );
+
+                return;
+            }
+
+
+            // ========================================
+            // SUBMIT BUTTON
+            // ========================================
+
+            const submitButton =
+                bookingForm.querySelector(
+                    'button[type="submit"]'
+                );
+
 
             if (submitButton) {
 
-                submitButton.disabled = false;
-                submitButton.textContent = "Submit Booking";
+                submitButton.disabled = true;
+
+                submitButton.textContent =
+                    "Submitting...";
+            }
+
+
+            // ========================================
+            // SUPABASE INSERT
+            // ========================================
+
+            try {
+
+                // Generate booking ID
+                const bookingId =
+                    generateBookingId();
+
+
+                // ========================================
+                // BOOKING DATA
+                // ========================================
+
+                const bookingData = {
+
+                    booking_id: bookingId,
+
+                    booking_number: bookingId,
+
+                    customer_name: customerName,
+
+                    phone: customerPhone,
+
+                    category: category,
+
+                    sub_category: subCategory,
+
+                    service: service,
+
+                    price: Number(price),
+
+                    service_date: serviceDate,
+
+                    address: address,
+
+                    problem: problem,
+
+                    status: "NEW"
+
+                };
+
+
+                console.log(
+                    "Sending booking:",
+                    bookingData
+                );
+
+
+                // ========================================
+                // INSERT INTO SUPABASE
+                // IMPORTANT:
+                // NO .select()
+                // ========================================
+
+                const { error } =
+                    await supabaseClient
+                        .from("bookings")
+                        .insert([
+                            bookingData
+                        ]);
+
+
+                console.log(
+                    "Supabase insert error:",
+                    error
+                );
+
+
+                // ========================================
+                // CHECK ERROR
+                // ========================================
+
+                if (error) {
+
+                    console.error(
+                        "Supabase booking error:",
+                        error
+                    );
+
+
+                    throw new Error(
+                        error.message ||
+                        "Booking could not be submitted."
+                    );
+                }
+
+
+                // ========================================
+                // SUCCESS
+                // ========================================
+
+                showMessage(
+                    "Booking submitted successfully! Booking ID: " +
+                    bookingId,
+                    "success"
+                );
+
+
+                // ========================================
+                // RESET FORM
+                // ========================================
+
+                bookingForm.reset();
+
+
+                // ========================================
+                // SERVICE DATE MINIMUM
+                // ========================================
+
+                const serviceDateInput =
+                    document.getElementById(
+                        "serviceDate"
+                    );
+
+
+                if (serviceDateInput) {
+
+                    const today =
+                        new Date()
+                            .toISOString()
+                            .split("T")[0];
+
+
+                    serviceDateInput.min =
+                        today;
+                }
+
+
+                // ========================================
+                // CLEAR SUB CATEGORY LIST
+                // ========================================
+
+                const subCategoryList =
+                    document.getElementById(
+                        "subCategoryList"
+                    );
+
+
+                if (subCategoryList) {
+
+                    subCategoryList.innerHTML =
+                        "";
+                }
+
+
+                // ========================================
+                // CLEAR SERVICE LIST
+                // ========================================
+
+                const serviceList =
+                    document.getElementById(
+                        "serviceList"
+                    );
+
+
+                if (serviceList) {
+
+                    serviceList.innerHTML =
+                        "";
+                }
+
+
+            } catch (error) {
+
+                console.error(
+                    "Booking submission error:",
+                    error
+                );
+
+
+                showMessage(
+                    error.message ||
+                    "Something went wrong. Please try again.",
+                    "error"
+                );
+
+
+            } finally {
+
+                // ========================================
+                // ENABLE BUTTON AGAIN
+                // ========================================
+
+                if (submitButton) {
+
+                    submitButton.disabled = false;
+
+                    submitButton.textContent =
+                        "Submit Booking";
+                }
 
             }
 
         }
-
-    });
+    );
 
 }
