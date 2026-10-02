@@ -1,27 +1,57 @@
-"use strict";
+/* =========================================================
+   HOMEFIX PUBLIC BOOKING SYSTEM
+   ========================================================= */
 
 
-// =====================================================
-// SUPABASE
-// =====================================================
+/* ---------------------------------------------------------
+   SUPABASE CONFIG
+   --------------------------------------------------------- */
 
 const SUPABASE_URL =
-"https://jjqxnsidbnibfnneaqwo.supabase.co";
+  "https://jjqxnsidbnibfnneaqwo.supabase.co";
 
 const SUPABASE_PUBLISHABLE_KEY =
-"sb_publishable_xa0AdT0m9SJ1Mrpiou4Nmw_Rby3-614";
+  "sb_publishable_xa0AdT0m9SJ1Mrpiou4Nmw_Rby3-614";
 
 
-const supabaseClient =
-window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_PUBLISHABLE_KEY
-);
+/* ---------------------------------------------------------
+   CREATE SUPABASE CLIENT
+   --------------------------------------------------------- */
+
+let supabaseClient = null;
+
+try {
+
+  if (
+    !window.supabase ||
+    typeof window.supabase.createClient !== "function"
+  ) {
+
+    throw new Error(
+      "Supabase library did not load."
+    );
+
+  }
+
+  supabaseClient =
+    window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_PUBLISHABLE_KEY
+    );
+
+} catch (error) {
+
+  console.error(
+    "Supabase initialization error:",
+    error
+  );
+
+}
 
 
-// =====================================================
-// SERVICE DATA
-// =====================================================
+/* ---------------------------------------------------------
+   SERVICE DATA
+   --------------------------------------------------------- */
 
 const serviceData = {
 
@@ -125,48 +155,90 @@ const serviceData = {
 };
 
 
-// =====================================================
-// ELEMENTS
-// =====================================================
+/* ---------------------------------------------------------
+   GET HTML ELEMENTS
+   --------------------------------------------------------- */
 
-const category =
-document.getElementById("category");
+const categorySelect =
+  document.getElementById("category");
 
-const subCategory =
-document.getElementById("subCategory");
+const subCategorySelect =
+  document.getElementById("sub_category");
 
-const service =
-document.getElementById("service");
-
-const bookingForm =
-document.getElementById("bookingForm");
-
-const message =
-document.getElementById("bookingMessage");
-
-const submitButton =
-document.getElementById("submitBooking");
+const serviceSelect =
+  document.getElementById("service");
 
 
-// =====================================================
-// LOAD CATEGORY OPTIONS
-// =====================================================
+/* ---------------------------------------------------------
+   CATEGORY CHANGE
+   --------------------------------------------------------- */
 
-function loadCategories(){
+if (categorySelect) {
 
-  category.innerHTML =
-  '<option value="">Select Category</option>';
+  categorySelect.addEventListener(
+    "change",
+    function () {
 
-  Object.keys(serviceData).forEach(
-    function(cat){
+      const category =
+        categorySelect.value;
 
-      const option =
-      document.createElement("option");
 
-      option.value = cat;
-      option.textContent = cat;
+      /* Reset sub-category */
 
-      category.appendChild(option);
+      subCategorySelect.innerHTML =
+        '<option value="">Select Sub-category</option>';
+
+
+      /* Reset service */
+
+      serviceSelect.innerHTML =
+        '<option value="">Select Service</option>';
+
+
+      /* Disable */
+
+      subCategorySelect.disabled = true;
+
+      serviceSelect.disabled = true;
+
+
+      if (
+        !category ||
+        !serviceData[category]
+      ) {
+
+        return;
+
+      }
+
+
+      /* Add sub-categories */
+
+      Object.keys(
+        serviceData[category]
+      ).forEach(
+        function (subCategory) {
+
+          const option =
+            document.createElement("option");
+
+          option.value =
+            subCategory;
+
+          option.textContent =
+            subCategory;
+
+          subCategorySelect.appendChild(
+            option
+          );
+
+        }
+      );
+
+
+      /* Enable */
+
+      subCategorySelect.disabled = false;
 
     }
   );
@@ -174,180 +246,108 @@ function loadCategories(){
 }
 
 
-// =====================================================
-// CATEGORY CHANGE
-// =====================================================
+/* ---------------------------------------------------------
+   SUB-CATEGORY CHANGE
+   --------------------------------------------------------- */
 
-category.addEventListener(
-"change",
-function(){
+if (subCategorySelect) {
 
-  const selected =
-  category.value;
+  subCategorySelect.addEventListener(
+    "change",
+    function () {
 
+      const category =
+        categorySelect.value;
 
-  subCategory.innerHTML =
-  '<option value="">Select Sub-category</option>';
-
-  service.innerHTML =
-  '<option value="">Select Service</option>';
+      const subCategory =
+        subCategorySelect.value;
 
 
-  service.disabled = true;
+      /* Reset service */
+
+      serviceSelect.innerHTML =
+        '<option value="">Select Service</option>';
 
 
-  if(!selected){
-
-    subCategory.disabled = true;
-
-    return;
-
-  }
+      serviceSelect.disabled = true;
 
 
-  subCategory.disabled = false;
+      if (
+        !category ||
+        !subCategory ||
+        !serviceData[category] ||
+        !serviceData[category][subCategory]
+      ) {
+
+        return;
+
+      }
 
 
-  const subCategories =
-  Object.keys(
-    serviceData[selected]
-  );
+      /* Add services */
+
+      serviceData[category][subCategory]
+        .forEach(
+          function (service) {
+
+            const option =
+              document.createElement("option");
+
+            option.value =
+              service;
+
+            option.textContent =
+              service;
+
+            serviceSelect.appendChild(
+              option
+            );
+
+          }
+        );
 
 
-  subCategories.forEach(
-    function(sub){
+      /* Enable */
 
-      const option =
-      document.createElement("option");
-
-      option.value = sub;
-
-      option.textContent = sub;
-
-      subCategory.appendChild(option);
-
-    }
-  );
-
-});
-
-
-// =====================================================
-// SUB CATEGORY CHANGE
-// =====================================================
-
-subCategory.addEventListener(
-"change",
-function(){
-
-  const cat =
-  category.value;
-
-  const sub =
-  subCategory.value;
-
-
-  service.innerHTML =
-  '<option value="">Select Service</option>';
-
-
-  if(!cat || !sub){
-
-    service.disabled = true;
-
-    return;
-
-  }
-
-
-  service.disabled = false;
-
-
-  const services =
-  serviceData[cat][sub];
-
-
-  services.forEach(
-    function(item){
-
-      const option =
-      document.createElement("option");
-
-      option.value = item;
-
-      option.textContent = item;
-
-      service.appendChild(option);
+      serviceSelect.disabled = false;
 
     }
   );
 
-});
+}
 
 
-// =====================================================
-// DATE
-// =====================================================
+/* ---------------------------------------------------------
+   BOOKING NUMBER GENERATOR
+   --------------------------------------------------------- */
 
-const serviceDate =
-document.getElementById("serviceDate");
-
-
-const today =
-new Date();
-
-
-const yyyy =
-today.getFullYear();
-
-
-const mm =
-String(
-today.getMonth() + 1
-).padStart(2,"0");
-
-
-const dd =
-String(
-today.getDate()
-).padStart(2,"0");
-
-
-serviceDate.min =
-`${yyyy}-${mm}-${dd}`;
-
-
-// =====================================================
-// BOOKING NUMBER
-// =====================================================
-
-function generateBookingNumber(){
+function generateBookingNumber() {
 
   const now =
-  new Date();
+    new Date();
 
 
   const year =
-  now.getFullYear();
+    now.getFullYear();
 
 
   const month =
-  String(
-    now.getMonth() + 1
-  ).padStart(2,"0");
+    String(
+      now.getMonth() + 1
+    ).padStart(2, "0");
 
 
   const day =
-  String(
-    now.getDate()
-  ).padStart(2,"0");
+    String(
+      now.getDate()
+    ).padStart(2, "0");
 
 
-  const random =
-  Math.floor(
-    1000 +
-    Math.random() * 9000
-  );
+  const randomNumber =
+    Math.floor(
+      1000 +
+      Math.random() * 9000
+    );
 
 
   return (
@@ -356,398 +356,522 @@ function generateBookingNumber(){
     month +
     day +
     "-" +
-    random
+    randomNumber
   );
 
 }
 
 
-// =====================================================
-// MESSAGE
-// =====================================================
+/* ---------------------------------------------------------
+   SHOW MESSAGE
+   --------------------------------------------------------- */
 
 function showMessage(
-  text,
-  type
-){
+  type,
+  text
+) {
 
-  message.textContent =
-  text;
+  const message =
+    document.getElementById("message");
+
+  if (!message) {
+    return;
+  }
+
 
   message.className =
-  type;
+    "message " + type;
 
-  message.style.display =
-  "block";
+
+  message.textContent =
+    text;
+
+
+  message.scrollIntoView({
+    behavior: "smooth",
+    block: "center"
+  });
 
 }
 
 
-// =====================================================
-// BOOKING SUBMIT
-// =====================================================
+/* ---------------------------------------------------------
+   SUBMIT BOOKING
+   --------------------------------------------------------- */
 
 window.submitHomeFixBooking =
-async function(event){
+  async function (event) {
 
-  event.preventDefault();
+    if (event) {
+      event.preventDefault();
+    }
 
 
-  // ---------------------------------------------------
-  // VALUES
-  // ---------------------------------------------------
+    /* -----------------------------------------------------
+       CHECK SUPABASE
+       ----------------------------------------------------- */
 
-  const customerName =
-  document
-  .getElementById("customerName")
-  .value
-  .trim();
-
-
-  const customerPhone =
-  document
-  .getElementById("customerPhone")
-  .value
-  .trim();
-
-
-  const selectedCategory =
-  category.value;
-
-
-  const selectedSubCategory =
-  subCategory.value;
-
-
-  const selectedService =
-  service.value;
-
-
-  const priceText =
-  document
-  .getElementById("price")
-  .value
-  .trim();
-
-
-  const selectedDate =
-  serviceDate.value;
-
-
-  const address =
-  document
-  .getElementById("address")
-  .value
-  .trim();
-
-
-  const problem =
-  document
-  .getElementById("problem")
-  .value
-  .trim();
-
-
-  // ---------------------------------------------------
-  // VALIDATION
-  // ---------------------------------------------------
-
-  if(!customerName){
-
-    showMessage(
-      "Please enter customer name.",
-      "error"
-    );
-
-    return false;
-
-  }
-
-
-  if(!customerPhone){
-
-    showMessage(
-      "Please enter phone number.",
-      "error"
-    );
-
-    return false;
-
-  }
-
-
-  if(!selectedCategory){
-
-    showMessage(
-      "Please select category.",
-      "error"
-    );
-
-    return false;
-
-  }
-
-
-  if(!selectedSubCategory){
-
-    showMessage(
-      "Please select sub-category.",
-      "error"
-    );
-
-    return false;
-
-  }
-
-
-  if(!selectedService){
-
-    showMessage(
-      "Please select service.",
-      "error"
-    );
-
-    return false;
-
-  }
-
-
-  if(!priceText){
-
-    showMessage(
-      "Please enter service price.",
-      "error"
-    );
-
-    return false;
-
-  }
-
-
-  const price =
-  Number(priceText);
-
-
-  if(
-    !Number.isFinite(price) ||
-    price < 0
-  ){
-
-    showMessage(
-      "Please enter a valid price.",
-      "error"
-    );
-
-    return false;
-
-  }
-
-
-  if(!selectedDate){
-
-    showMessage(
-      "Please select service date.",
-      "error"
-    );
-
-    return false;
-
-  }
-
-
-  if(!address){
-
-    showMessage(
-      "Please enter service address.",
-      "error"
-    );
-
-    return false;
-
-  }
-
-
-  // ---------------------------------------------------
-  // BOOKING NUMBER
-  // ---------------------------------------------------
-
-  const bookingNumber =
-  generateBookingNumber();
-
-
-  // ---------------------------------------------------
-  // BOOKING DATA
-  // ---------------------------------------------------
-
-  const bookingData = {
-
-    booking_id:
-    bookingNumber,
-
-    booking_number:
-    bookingNumber,
-
-    customer_name:
-    customerName,
-
-    phone:
-    customerPhone,
-
-    category:
-    selectedCategory,
-
-    sub_category:
-    selectedSubCategory,
-
-    service:
-    selectedService,
-
-    price:
-    price,
-
-    service_date:
-    selectedDate,
-
-    address:
-    address,
-
-    problem:
-    problem,
-
-    status:
-    "NEW"
-
-  };
-
-
-  // ---------------------------------------------------
-  // BUTTON
-  // ---------------------------------------------------
-
-  submitButton.disabled =
-  true;
-
-  submitButton.textContent =
-  "Submitting...";
-
-
-  showMessage(
-    "Submitting booking...",
-    "info"
-  );
-
-
-  // ---------------------------------------------------
-  // SUPABASE INSERT
-  // ---------------------------------------------------
-
-  try{
-
-    const {
-      error
-    } =
-    await supabaseClient
-    .from("bookings")
-    .insert([
-      bookingData
-    ]);
-
-
-    // -------------------------------------------------
-    // ERROR
-    // -------------------------------------------------
-
-    if(error){
-
-      console.error(
-        "SUPABASE ERROR:",
-        error
-      );
-
+    if (!supabaseClient) {
 
       showMessage(
-        error.message,
-        "error"
+        "error",
+        "Supabase connection failed. Please refresh the page."
       );
-
 
       return false;
 
     }
 
 
-    // -------------------------------------------------
-    // SUCCESS
-    // -------------------------------------------------
+    /* -----------------------------------------------------
+       GET FORM
+       ----------------------------------------------------- */
 
-    showMessage(
-      "Booking successful! Booking ID: " +
-      bookingNumber,
-      "success"
+    const form =
+      document.getElementById(
+        "bookingForm"
+      );
+
+    const submitBtn =
+      document.getElementById(
+        "submitBtn"
+      );
+
+
+    if (!form) {
+
+      showMessage(
+        "error",
+        "Booking form not found."
+      );
+
+      return false;
+
+    }
+
+
+    /* -----------------------------------------------------
+       GET VALUES
+       ----------------------------------------------------- */
+
+    const customerName =
+      document
+        .getElementById("customer_name")
+        .value
+        .trim();
+
+
+    const customerPhone =
+      document
+        .getElementById("phone")
+        .value
+        .trim();
+
+
+    const category =
+      document
+        .getElementById("category")
+        .value;
+
+
+    const subCategory =
+      document
+        .getElementById("sub_category")
+        .value;
+
+
+    const service =
+      document
+        .getElementById("service")
+        .value;
+
+
+    const priceValue =
+      document
+        .getElementById("price")
+        .value
+        .trim();
+
+
+    const serviceDate =
+      document
+        .getElementById("service_date")
+        .value;
+
+
+    const address =
+      document
+        .getElementById("address")
+        .value
+        .trim();
+
+
+    const problem =
+      document
+        .getElementById("problem")
+        .value
+        .trim();
+
+
+    /* -----------------------------------------------------
+       VALIDATION
+       ----------------------------------------------------- */
+
+    if (!customerName) {
+
+      showMessage(
+        "error",
+        "Please enter customer name."
+      );
+
+      return false;
+
+    }
+
+
+    if (!customerPhone) {
+
+      showMessage(
+        "error",
+        "Please enter phone number."
+      );
+
+      return false;
+
+    }
+
+
+    if (!category) {
+
+      showMessage(
+        "error",
+        "Please select a category."
+      );
+
+      return false;
+
+    }
+
+
+    if (!subCategory) {
+
+      showMessage(
+        "error",
+        "Please select a sub-category."
+      );
+
+      return false;
+
+    }
+
+
+    if (!service) {
+
+      showMessage(
+        "error",
+        "Please select a service."
+      );
+
+      return false;
+
+    }
+
+
+    if (!priceValue) {
+
+      showMessage(
+        "error",
+        "Please enter service price."
+      );
+
+      return false;
+
+    }
+
+
+    if (!serviceDate) {
+
+      showMessage(
+        "error",
+        "Please select service date."
+      );
+
+      return false;
+
+    }
+
+
+    if (!address) {
+
+      showMessage(
+        "error",
+        "Please enter service address."
+      );
+
+      return false;
+
+    }
+
+
+    /* -----------------------------------------------------
+       PRICE
+       ----------------------------------------------------- */
+
+    const price =
+      Number(priceValue);
+
+
+    if (
+      Number.isNaN(price) ||
+      price < 0
+    ) {
+
+      showMessage(
+        "error",
+        "Please enter a valid price."
+      );
+
+      return false;
+
+    }
+
+
+    /* -----------------------------------------------------
+       GENERATE BOOKING NUMBER
+       ----------------------------------------------------- */
+
+    const bookingNumber =
+      generateBookingNumber();
+
+
+    /* -----------------------------------------------------
+       BOOKING DATA
+       ----------------------------------------------------- */
+
+    const bookingData = {
+
+      booking_id:
+        bookingNumber,
+
+      booking_number:
+        bookingNumber,
+
+      customer_name:
+        customerName,
+
+      phone:
+        customerPhone,
+
+      category:
+        category,
+
+      sub_category:
+        subCategory,
+
+      service:
+        service,
+
+      price:
+        price,
+
+      service_date:
+        serviceDate,
+
+      address:
+        address,
+
+      problem:
+        problem,
+
+      status:
+        "NEW"
+
+    };
+
+
+    console.log(
+      "HomeFix booking data:",
+      bookingData
     );
 
 
-    bookingForm.reset();
+    /* -----------------------------------------------------
+       DISABLE BUTTON
+       ----------------------------------------------------- */
+
+    submitBtn.disabled =
+      true;
+
+    submitBtn.textContent =
+      "Submitting Booking...";
 
 
-    subCategory.innerHTML =
-    '<option value="">Select Sub-category</option>';
+    /* -----------------------------------------------------
+       INSERT INTO SUPABASE
+       ----------------------------------------------------- */
 
-    service.innerHTML =
-    '<option value="">Select Service</option>';
+    try {
 
-    subCategory.disabled =
-    true;
-
-    service.disabled =
-    true;
-
-
-    return false;
+      const result =
+        await supabaseClient
+          .from("bookings")
+          .insert([
+            bookingData
+          ]);
 
 
-  }catch(error){
+      /* ---------------------------------------------------
+         SUPABASE ERROR
+         --------------------------------------------------- */
 
-    console.error(
-      "BOOKING ERROR:",
-      error
-    );
+      if (result.error) {
 
-
-    showMessage(
-      "Unable to connect to Supabase.",
-      "error"
-    );
+        console.error(
+          "Supabase booking error:",
+          result.error
+        );
 
 
-    return false;
+        showMessage(
+          "error",
+          "Booking failed: " +
+          result.error.message
+        );
 
 
-  }finally{
+        submitBtn.disabled =
+          false;
 
-    submitButton.disabled =
-    false;
-
-    submitButton.textContent =
-    "Submit Booking";
-
-  }
-
-};
+        submitBtn.textContent =
+          "Submit Booking";
 
 
-// =====================================================
-// INITIALIZE
-// =====================================================
+        return false;
 
-loadCategories();
+      }
 
+
+      /* ---------------------------------------------------
+         SUCCESS
+         --------------------------------------------------- */
+
+      console.log(
+        "Booking successfully created:",
+        bookingNumber
+      );
+
+
+      showMessage(
+        "success",
+        "Booking successfully submitted!"
+      );
+
+
+      /* ---------------------------------------------------
+         SHOW BOOKING NUMBER
+         --------------------------------------------------- */
+
+      const bookingResult =
+        document.getElementById(
+          "bookingResult"
+        );
+
+
+      if (bookingResult) {
+
+        bookingResult.style.display =
+          "block";
+
+
+        bookingResult.innerHTML =
+          `
+          <strong>Booking Successful!</strong>
+          <br><br>
+          Your Booking Number:
+          <br>
+          <strong>${bookingNumber}</strong>
+          <br><br>
+          Please keep this Booking Number for future reference.
+          `;
+
+      }
+
+
+      /* ---------------------------------------------------
+         RESET FORM
+         --------------------------------------------------- */
+
+      form.reset();
+
+
+      /* Reset dropdowns */
+
+      subCategorySelect.innerHTML =
+        '<option value="">Select Sub-category</option>';
+
+      serviceSelect.innerHTML =
+        '<option value="">Select Service</option>';
+
+
+      subCategorySelect.disabled =
+        true;
+
+      serviceSelect.disabled =
+        true;
+
+
+      /* ---------------------------------------------------
+         BUTTON
+         --------------------------------------------------- */
+
+      submitBtn.disabled =
+        false;
+
+      submitBtn.textContent =
+        "Submit Booking";
+
+
+      return false;
+
+
+    } catch (error) {
+
+      console.error(
+        "Unexpected booking error:",
+        error
+      );
+
+
+      showMessage(
+        "error",
+        "Something went wrong: " +
+        error.message
+      );
+
+
+      submitBtn.disabled =
+        false;
+
+      submitBtn.textContent =
+        "Submit Booking";
+
+
+      return false;
+
+    }
+
+  };
+
+
+/* ---------------------------------------------------------
+   PAGE LOADED
+   --------------------------------------------------------- */
 
 console.log(
-  "HomeFix booking system loaded."
+  "HomeFix public booking system loaded."
 );
 
 console.log(
-  "Supabase URL:",
-  SUPABASE_URL
+  "Supabase:",
+  supabaseClient
 );
