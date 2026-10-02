@@ -1,532 +1,464 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>HomeFix.live - Book a Service</title>
+<title>HomeFix.live - Booking</title>
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+<style>
 
-    body {
-      margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
-      background: #f4f7fb;
-      color: #172033;
-    }
+*{
+  box-sizing:border-box;
+}
 
-    .header {
-      background: #fff;
-      border-bottom: 1px solid #e5e7eb;
-    }
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#f4f7fb;
+  color:#172033;
+}
 
-    .header-inner {
-      max-width: 900px;
-      margin: auto;
-      min-height: 78px;
-      padding: 14px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
+.header{
+  background:white;
+  border-bottom:1px solid #ddd;
+}
 
-    .logo {
-      font-size: 30px;
-      font-weight: 800;
-      letter-spacing: -1.5px;
-    }
+.header-inner{
+  max-width:900px;
+  margin:auto;
+  padding:15px 20px;
+  min-height:75px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
 
-    .logo span {
-      color: #2580ee;
-    }
+.logo{
+  font-size:30px;
+  font-weight:800;
+}
 
-    .logo small {
-      color: #667085;
-      font-size: 13px;
-    }
+.logo span{
+  color:#2580ee;
+}
 
-    .login-btn {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-width: 110px;
-      height: 48px;
-      padding: 0 20px;
-      border: 1px solid #d9dee7;
-      border-radius: 15px;
-      background: #fff;
-      color: #182033;
-      text-decoration: none;
-      font-weight: 700;
-      font-size: 17px;
-    }
+.logo small{
+  color:#667085;
+  font-size:13px;
+}
 
-    .page {
-      max-width: 900px;
-      margin: auto;
-      padding: 34px 16px 60px;
-    }
+.login-btn{
+  padding:13px 25px;
+  border:1px solid #ddd;
+  border-radius:14px;
+  text-decoration:none;
+  color:#172033;
+  font-weight:bold;
+}
 
-    .hero {
-      text-align: center;
-      margin-bottom: 26px;
-    }
+.container{
+  max-width:850px;
+  margin:auto;
+  padding:30px 15px;
+}
 
-    .hero h1 {
-      margin: 0 0 10px;
-      font-size: 34px;
-    }
+.card{
+  background:white;
+  padding:28px;
+  border-radius:22px;
+  box-shadow:0 8px 30px rgba(0,0,0,.06);
+}
 
-    .hero p {
-      margin: 0;
-      color: #667085;
-    }
+h1{
+  text-align:center;
+  margin-top:0;
+}
 
-    .card {
-      background: #fff;
-      border: 1px solid #e1e6ee;
-      border-radius: 24px;
-      padding: 28px;
-      box-shadow: 0 8px 28px rgba(20,35,60,.06);
-    }
+.subtitle{
+  text-align:center;
+  color:#667085;
+  margin-bottom:30px;
+}
 
-    .section-title {
-      margin: 0 0 24px;
-      font-size: 24px;
-    }
+.grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:18px;
+}
 
-    .grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-    }
+.full{
+  grid-column:1/-1;
+}
 
-    .field {
-      margin-bottom: 4px;
-    }
+label{
+  display:block;
+  font-weight:bold;
+  margin-bottom:7px;
+}
 
-    .field.full {
-      grid-column: 1 / -1;
-    }
+.required{
+  color:red;
+}
 
-    label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 700;
-      font-size: 16px;
-    }
+input,
+select,
+textarea{
+  width:100%;
+  padding:14px;
+  border:1px solid #d6dbe3;
+  border-radius:12px;
+  font-size:16px;
+  background:white;
+}
 
-    .required {
-      color: #e03131;
-    }
+textarea{
+  min-height:120px;
+  resize:vertical;
+}
 
-    input,
-    textarea {
-      width: 100%;
-      border: 1px solid #d7dce5;
-      border-radius: 14px;
-      background: #fff;
-      color: #182033;
-      font-size: 17px;
-      padding: 15px 16px;
-      outline: none;
-      font-family: inherit;
-    }
+.hint{
+  color:#777;
+  font-size:13px;
+  margin-top:5px;
+}
 
-    input:focus,
-    textarea:focus {
-      border-color: #2580ee;
-      box-shadow: 0 0 0 3px rgba(37,128,238,.12);
-    }
+button{
+  width:100%;
+  padding:16px;
+  border:none;
+  border-radius:13px;
+  background:#2580ee;
+  color:white;
+  font-size:18px;
+  font-weight:bold;
+  cursor:pointer;
+}
 
-    textarea {
-      min-height: 120px;
-      resize: vertical;
-    }
+button:disabled{
+  opacity:.6;
+}
 
-    .hint {
-      margin-top: 7px;
-      color: #667085;
-      font-size: 13px;
-    }
+#bookingMessage{
+  display:none;
+  margin-top:15px;
+  padding:14px;
+  border-radius:10px;
+  font-weight:bold;
+}
 
-    .submit-btn {
-      width: 100%;
-      border: 0;
-      border-radius: 15px;
-      background: #2580ee;
-      color: white;
-      font-size: 18px;
-      font-weight: 800;
-      padding: 16px;
-      margin-top: 10px;
-      cursor: pointer;
-    }
+.success{
+  display:block !important;
+  background:#e9f8ee;
+  color:#16733a;
+}
 
-    .submit-btn:disabled {
-      opacity: .65;
-    }
+.error{
+  display:block !important;
+  background:#fff0f0;
+  color:#c62828;
+}
 
-    #bookingMessage {
-      display: none;
-      margin-top: 18px;
-      padding: 14px 16px;
-      border-radius: 12px;
-      font-weight: 700;
-      line-height: 1.45;
-      word-break: break-word;
-    }
+.info{
+  display:block !important;
+  background:#eef6ff;
+  color:#175da8;
+}
 
-    #bookingMessage.success {
-      display: block;
-      background: #eaf8ef;
-      color: #16733a;
-      border: 1px solid #bce8ca;
-    }
+@media(max-width:700px){
 
-    #bookingMessage.error {
-      display: block;
-      background: #fff0f0;
-      color: #c62828;
-      border: 1px solid #f1bcbc;
-    }
+  .grid{
+    grid-template-columns:1fr;
+  }
 
-    #bookingMessage.info {
-      display: block;
-      background: #eef6ff;
-      color: #175da8;
-      border: 1px solid #c7e0ff;
-    }
+  .full{
+    grid-column:auto;
+  }
 
-    .footer {
-      text-align: center;
-      color: #7a8495;
-      padding: 24px 16px;
-      font-size: 14px;
-    }
+  .card{
+    padding:20px 15px;
+  }
 
-    @media (max-width: 700px) {
+  .logo{
+    font-size:24px;
+  }
 
-      .header-inner {
-        padding: 12px 14px;
-      }
+}
 
-      .logo {
-        font-size: 25px;
-      }
-
-      .login-btn {
-        min-width: 92px;
-        height: 44px;
-        font-size: 15px;
-      }
-
-      .page {
-        padding: 24px 10px 45px;
-      }
-
-      .hero h1 {
-        font-size: 28px;
-      }
-
-      .card {
-        padding: 20px 16px;
-        border-radius: 20px;
-      }
-
-      .grid {
-        grid-template-columns: 1fr;
-      }
-
-      .field.full {
-        grid-column: auto;
-      }
-    }
-  </style>
+</style>
 </head>
+
 
 <body>
 
 <header class="header">
 
-  <div class="header-inner">
+<div class="header-inner">
 
-    <div class="logo">
-      HOME<span>FIX</span><small>.LIVE</small>
-    </div>
+<div class="logo">
+HOME<span>FIX</span><small>.LIVE</small>
+</div>
 
-    <a class="login-btn" href="login.html">
-      Login
-    </a>
+<a href="login.html" class="login-btn">
+Login
+</a>
 
-  </div>
+</div>
 
 </header>
 
 
-<main class="page">
+<div class="container">
 
-  <section class="hero">
+<div class="card">
 
-    <h1>Book a Home Service</h1>
+<h1>Create New Booking</h1>
 
-    <p>
-      Tell us what service you need.
-      No login is required to create a booking.
-    </p>
+<div class="subtitle">
+No login required to create a booking
+</div>
 
-  </section>
 
+<!-- IMPORTANT: onsubmit prevents page reload -->
+<form
+  id="bookingForm"
+  onsubmit="return handleBookingSubmit(event)"
+>
 
-  <section class="card">
 
-    <h2 class="section-title">
-      Create New Booking
-    </h2>
+<div class="grid">
 
 
-    <form id="bookingForm" novalidate>
+<!-- CUSTOMER NAME -->
 
-      <div class="grid">
+<div>
 
+<label>
+Customer Name <span class="required">*</span>
+</label>
 
-        <!-- CUSTOMER NAME -->
+<input
+  id="customerName"
+  type="text"
+  placeholder="Enter customer name"
+  required
+>
 
-        <div class="field">
+</div>
 
-          <label for="customerName">
-            Customer Name
-            <span class="required">*</span>
-          </label>
 
-          <input
-            id="customerName"
-            name="customerName"
-            type="text"
-            placeholder="Enter customer name"
-            autocomplete="name"
-            required
-          >
+<!-- PHONE -->
 
-        </div>
+<div>
 
+<label>
+Phone Number <span class="required">*</span>
+</label>
 
-        <!-- PHONE -->
+<input
+  id="customerPhone"
+  type="tel"
+  placeholder="01XXXXXXXXX"
+  required
+>
 
-        <div class="field">
+</div>
 
-          <label for="customerPhone">
-            Phone Number
-            <span class="required">*</span>
-          </label>
 
-          <input
-            id="customerPhone"
-            name="customerPhone"
-            type="tel"
-            placeholder="01XXXXXXXXX"
-            autocomplete="tel"
-            required
-          >
+<!-- CATEGORY -->
 
-        </div>
+<div>
 
+<label>
+Problem Category <span class="required">*</span>
+</label>
 
-        <!-- CATEGORY -->
+<select
+  id="category"
+  required
+>
 
-        <div class="field">
+<option value="">
+Select Category
+</option>
 
-          <label for="category">
-            Problem Category
-            <span class="required">*</span>
-          </label>
+</select>
 
-          <input
-            id="category"
-            name="category"
-            type="text"
-            list="categoryList"
-            placeholder="e.g. Electrical"
-            required
-          >
+</div>
 
-          <datalist id="categoryList">
 
-            <option value="Electrical">
-            <option value="Plumbing">
-            <option value="AC Service">
-            <option value="Appliance Repair">
-            <option value="Painting">
-            <option value="Other">
+<!-- SUB CATEGORY -->
 
-          </datalist>
+<div>
 
-        </div>
+<label>
+Problem Sub-category <span class="required">*</span>
+</label>
 
+<select
+  id="subCategory"
+  required
+  disabled
+>
 
-        <!-- SUB CATEGORY -->
+<option value="">
+Select Sub-category
+</option>
 
-        <div class="field">
+</select>
 
-          <label for="subCategory">
-            Problem Sub-category
-            <span class="required">*</span>
-          </label>
+</div>
 
-          <input
-            id="subCategory"
-            name="subCategory"
-            type="text"
-            placeholder="Enter sub-category"
-            required
-          >
 
-        </div>
+<!-- SERVICE -->
 
+<div class="full">
 
-        <!-- SERVICE -->
+<label>
+Service Item <span class="required">*</span>
+</label>
 
-        <div class="field full">
+<select
+  id="service"
+  required
+  disabled
+>
 
-          <label for="service">
-            Service Item
-            <span class="required">*</span>
-          </label>
+<option value="">
+Select Service
+</option>
 
-          <input
-            id="service"
-            name="service"
-            type="text"
-            placeholder="Enter service item"
-            required
-          >
+</select>
 
-        </div>
+</div>
 
 
-        <!-- PRICE -->
+<!-- PRICE -->
 
-        <div class="field">
+<div>
 
-          <label for="price">
-            Service Price (৳)
-            <span class="required">*</span>
-          </label>
+<label>
+Service Price (৳)
+<span class="required">*</span>
+</label>
 
-          <input
-            id="price"
-            name="price"
-            type="number"
-            min="0"
-            step="0.01"
-            placeholder="Enter price manually"
-            required
-          >
+<input
+  id="price"
+  type="number"
+  min="0"
+  step="0.01"
+  placeholder="Enter price manually"
+  required
+>
 
-          <div class="hint">
-            Price must be entered manually.
-          </div>
+<div class="hint">
+Price must be entered manually.
+</div>
 
-        </div>
+</div>
 
 
-        <!-- SERVICE DATE -->
+<!-- DATE -->
 
-        <div class="field">
+<div>
 
-          <label for="serviceDate">
-            Preferred Service Date
-            <span class="required">*</span>
-          </label>
+<label>
+Preferred Service Date
+<span class="required">*</span>
+</label>
 
-          <input
-            id="serviceDate"
-            name="serviceDate"
-            type="date"
-            required
-          >
+<input
+  id="serviceDate"
+  type="date"
+  required
+>
 
-        </div>
+</div>
 
 
-        <!-- ADDRESS -->
+<!-- ADDRESS -->
 
-        <div class="field full">
+<div class="full">
 
-          <label for="address">
-            Service Address
-            <span class="required">*</span>
-          </label>
+<label>
+Service Address
+<span class="required">*</span>
+</label>
 
-          <textarea
-            id="address"
-            name="address"
-            placeholder="Enter complete service address"
-            required
-          ></textarea>
+<textarea
+  id="address"
+  placeholder="Enter complete service address"
+  required
+></textarea>
 
-        </div>
+</div>
 
 
-        <!-- PROBLEM -->
+<!-- PROBLEM -->
 
-        <div class="field full">
+<div class="full">
 
-          <label for="problem">
-            Problem / Additional Information
-          </label>
+<label>
+Problem / Additional Information
+</label>
 
-          <textarea
-            id="problem"
-            name="problem"
-            placeholder="Describe the problem or additional requirements"
-          ></textarea>
+<textarea
+  id="problem"
+  placeholder="Describe the problem"
+></textarea>
 
-        </div>
+</div>
 
 
-        <!-- SUBMIT -->
+<!-- BUTTON -->
 
-        <div class="field full">
+<div class="full">
 
-          <button
-            id="submitBooking"
-            class="submit-btn"
-            type="submit"
-          >
-            Submit Booking
-          </button>
+<button
+  id="submitBooking"
+  type="submit"
+>
+Submit Booking
+</button>
 
-          <div
-            id="bookingMessage"
-            role="alert"
-          ></div>
+<div id="bookingMessage"></div>
 
-        </div>
+</div>
 
 
-      </div>
+</div>
 
-    </form>
+</form>
 
-  </section>
+</div>
 
-</main>
+</div>
 
 
-<footer class="footer">
-  © 2026 HomeFix.live. All rights reserved.
-</footer>
-
-
-<!-- IMPORTANT: Supabase MUST load first -->
+<!-- Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-<!-- HomeFix booking JavaScript -->
-<script src="public-booking.js"></script>
+<!-- HomeFix JS -->
+<script src="./public-booking.js?v=3"></script>
+
+
+<!-- Safety fallback: prevents normal browser form reload -->
+<script>
+
+function handleBookingSubmit(event){
+
+  event.preventDefault();
+
+  if(typeof window.submitHomeFixBooking === "function"){
+
+    window.submitHomeFixBooking(event);
+
+  }
+
+  return false;
+}
+
+</script>
 
 </body>
 </html>
